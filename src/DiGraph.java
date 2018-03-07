@@ -8,14 +8,18 @@
 import java.util.LinkedList;
 
 public class DiGraph {
-    LinkedList[] graph;
+    LinkedList<Integer>[] graphAdjacencies;
 
     public DiGraph(int N){
-        graph = new LinkedList[N];
+        graphAdjacencies = new LinkedList[N];
     }
 
     public void addEdge(int from, int to){
-        // TODO: Search for edge
+        for(Integer entry : graphAdjacencies){ // Don't add if edge already connected
+            if(entry.equals(to)){
+                return;
+            }
+        }
         // TODO: Add edge if not found
     }
 
