@@ -5,6 +5,7 @@
  **  03-09-2018
  */
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class DiGraph {
@@ -39,5 +40,17 @@ public class DiGraph {
 
     public void print(){
         // TODO
+    }
+
+    private int[] indegrees(){
+        int[] indegrees = new int[graphAdjacencies.length];
+        for(int i = 0; i < graphAdjacencies.length; i++){ // Look at the adjacency list for each node
+            Iterator listSearch = graphAdjacencies[i].iterator(); // Iterate through each adjacency list
+            while(listSearch.hasNext()){ // If the adjacency list mentions a node, that node's indegree is +1
+                Integer next = (Integer)listSearch.next();
+                indegrees[next]++;
+            }
+        }
+        return indegrees;
     }
 }
