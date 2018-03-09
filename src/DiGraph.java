@@ -5,13 +5,11 @@
  **  03-09-2018
  */
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.io.*;
 import java.util.*;
 
 public class DiGraph {
-    LinkedList<Integer>[] graphAdjacencies;
+    private LinkedList<Integer>[] graphAdjacencies;
 
     public DiGraph(int N){
         graphAdjacencies = new LinkedList[N];
@@ -77,5 +75,35 @@ public class DiGraph {
             }
         }
         return indegrees;
+    }
+
+    public int[] topSort() throws IllegalArgumentException{
+        int vertices = graphAdjacencies.length;
+        int[] indegrees = indegrees();
+        int[] results = new int[vertices + 1]; // THIS IS INDEXED FROM 1 AS PER SPECIFICATIONS!
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+        for(int i = 0; i < vertices; i++){
+            if(indegrees[i] == 0){
+                queue.add(i);
+            }
+        }
+        int resultIndex = 1; // THIS IS INDEXED FROM 1 AS PER SPECIFICATIONS!
+        while(!queue.isEmpty()){
+            int vertex = queue.pop();
+            results[resultIndex] = vertex;
+            resultIndex++;
+            Iterator<Integer> adjacencies = graphAdjacencies[resultIndex - 1].iterator();
+            while(adjacencies.hasNext()){
+                int decrementingVertex = adjacencies.next();
+                indegrees[resultIndex - 1] -= 1;
+                if(indegrees[resultIndex - 1] == 0){
+                    queue.add(decrementingVertex);
+                }
+            }
+        }
+        if(results.length == vertices + 1){
+            throw new IllegalArgumentException();
+        }
+        return results;
     }
 }
