@@ -15,6 +15,9 @@ public class DiGraph {
 
     public DiGraph(int N){
         graphAdjacencies = new LinkedList[N];
+        for(int i = 0; i < N; i++){
+            graphAdjacencies[i] = new LinkedList<Integer>();
+        }
     }
 
     public void addEdge(int from, int to){
@@ -55,11 +58,11 @@ public class DiGraph {
             Object[] elements = graphAdjacencies[i].toArray();
             if (elements.length != 0)
             {
-                System.out.print(elements[1]);
+                System.out.print(elements[0]);
             }
             for (int j = 1; j < elements.length; j++)
             {
-                System.out.print(" , " + elements[j]);
+                System.out.print(", " + elements[j]);
             }
         }
     }
