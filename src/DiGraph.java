@@ -24,15 +24,16 @@ public class DiGraph {
                 return;
             }
         }*/
-        if (!(graphAdjacencies[from-1]).contains(to))
+        if (!(graphAdjacencies[from-1]).contains(to-1))
         {
-            graphAdjacencies[from-1].add(to);
+            graphAdjacencies[from-1].add(to-1);
+            System.out.println("(" + from + ", " + to + ") edge is now added to the graph");
         }
         // TODO: Add edge if not found
     }
 
     public void deleteEdge(int from, int to){
-        graphAdjacencies[from-1].removeFirstOccurrence(to);
+        graphAdjacencies[from-1].removeFirstOccurrence(to-1);
     }
 
     public int edgeCount(){
@@ -45,14 +46,13 @@ public class DiGraph {
     }
 
     public int vertexCount(){
-        // TODO
         return graphAdjacencies.length;
     }
 
     public void print(){
         for (int i = 0; i < graphAdjacencies.length; i++)
         {
-            System.out.print((i+1) + "is connected to: ");
+            System.out.print((i+1) + " is connected to: ");
             Object[] elements = graphAdjacencies[i].toArray();
             if (elements.length != 0)
             {
@@ -60,8 +60,9 @@ public class DiGraph {
             }
             for (int j = 1; j < elements.length; j++)
             {
-                System.out.print(", " + elements[j]);
+                System.out.print(", " + ((int)elements[j]+1));
             }
+            System.out.println();
         }
     }
 
@@ -69,7 +70,7 @@ public class DiGraph {
         int[] indegrees = new int[graphAdjacencies.length];
         for(int i = 0; i < graphAdjacencies.length; i++){ // Look at the adjacency list for each node
             Iterator listSearch = graphAdjacencies[i].iterator(); // Iterate through each adjacency list
-            while(listSearch.hasNext()){ // If the adjacency list mentions a node, that node's indegree is +1
+            while(listSearch.hasNext()){ // If the adjacency list mentions a node, increment that node's indegree
                 Integer next = (Integer)listSearch.next();
                 indegrees[next]++;
             }
@@ -80,29 +81,29 @@ public class DiGraph {
     public int[] topSort() throws IllegalArgumentException{
         int vertices = graphAdjacencies.length;
         int[] indegrees = indegrees();
-        int[] results = new int[vertices + 1]; // THIS IS INDEXED FROM 1 AS PER SPECIFICATIONS!
+        int[] results = new int[vertices];
         LinkedList<Integer> queue = new LinkedList<Integer>();
         for(int i = 0; i < vertices; i++){
             if(indegrees[i] == 0){
-                queue.add(i);
+                queue.add(i + 1); // Natural numbering of vertices
             }
         }
-        int resultIndex = 1; // THIS IS INDEXED FROM 1 AS PER SPECIFICATIONS!
+        int resultIndex = 0;
         while(!queue.isEmpty()){
+            if(resultIndex >= results.length){ // Catch symptom of cyclic graph
+                throw new IllegalArgumentException();
+            }
             int vertex = queue.pop();
             results[resultIndex] = vertex;
             resultIndex++;
-            Iterator<Integer> adjacencies = graphAdjacencies[resultIndex - 1].iterator();
+            Iterator<Integer> adjacencies = graphAdjacencies[vertex-1].iterator();
             while(adjacencies.hasNext()){
                 int decrementingVertex = adjacencies.next();
-                indegrees[resultIndex - 1] -= 1;
-                if(indegrees[resultIndex - 1] == 0){
+                indegrees[decrementingVertex] -= 1;
+                if(indegrees[decrementingVertex] == 0){
                     queue.add(decrementingVertex);
                 }
             }
-        }
-        if(results.length == vertices + 1){
-            throw new IllegalArgumentException();
         }
         return results;
     }
