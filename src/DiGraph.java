@@ -7,6 +7,8 @@
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.io.*;
+import java.util.*;
 
 public class DiGraph {
     LinkedList<Integer>[] graphAdjacencies;
@@ -16,30 +18,50 @@ public class DiGraph {
     }
 
     public void addEdge(int from, int to){
-        for(Integer entry : graphAdjacencies){ // Don't add if edge already connected
+        /*for(Integer entry : graphAdjacencies){ // Don't add if edge already connected
             if(entry.equals(to)){
                 return;
             }
+        }*/
+        if (!(graphAdjacencies[from-1]).contains(to))
+        {
+            graphAdjacencies[from-1].add(to);
         }
         // TODO: Add edge if not found
     }
 
     public void deleteEdge(int from, int to){
-        // TODO
+        graphAdjacencies[from-1].removeFirstOccurrence(to);
     }
 
     public int edgeCount(){
-        // TODO
-        return -1;
+        int sum = 0;
+        for (int i = 0; i < graphAdjacencies.length; i++)
+        {
+            sum += graphAdjacencies[i].size();
+        }
+        return sum;
     }
 
     public int vertexCount(){
         // TODO
-        return -1;
+        return graphAdjacencies.length;
     }
 
     public void print(){
-        // TODO
+        for (int i = 0; i < graphAdjacencies.length; i++)
+        {
+            System.out.print((i+1) + "is connected to: ");
+            Object[] elements = graphAdjacencies[i].toArray();
+            if (elements.length != 0)
+            {
+                System.out.print(elements[1]);
+            }
+            for (int j = 1; j < elements.length; j++)
+            {
+                System.out.print(" , " + elements[j]);
+            }
+        }
     }
 
     private int[] indegrees(){
