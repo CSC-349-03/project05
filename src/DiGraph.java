@@ -56,7 +56,7 @@ public class DiGraph {
             Object[] elements = graphAdjacencies[i].toArray();
             if (elements.length != 0)
             {
-                System.out.print(elements[0]);
+                System.out.print((int)elements[0]+1);
             }
             for (int j = 1; j < elements.length; j++)
             {
@@ -80,17 +80,17 @@ public class DiGraph {
 
     public int[] topSort() throws IllegalArgumentException{
         int vertices = graphAdjacencies.length;
-        int[] indegrees = indegrees();
-        int[] results = new int[vertices];
-        LinkedList<Integer> queue = new LinkedList<Integer>();
+        int[] indegrees = indegrees(); // NOT naturally indexed NOR numbered
+        int[] results = new int[vertices]; // NOT naturally indexed, BUT naturally numbered
+        LinkedList<Integer> queue = new LinkedList<Integer>(); // Contents ARE naturally numbered
         for(int i = 0; i < vertices; i++){
             if(indegrees[i] == 0){
-                queue.add(i + 1); // Natural numbering of vertices
+                queue.add(i + 1);
             }
         }
         int resultIndex = 0;
         while(!queue.isEmpty()){
-            if(resultIndex >= results.length){ // Catch symptom of cyclic graph
+            if(resultIndex >= results.length + 1){ // Catch symptom of cyclic graph
                 throw new IllegalArgumentException();
             }
             int vertex = queue.pop();
@@ -98,12 +98,15 @@ public class DiGraph {
             resultIndex++;
             Iterator<Integer> adjacencies = graphAdjacencies[vertex-1].iterator();
             while(adjacencies.hasNext()){
-                int decrementingVertex = adjacencies.next();
-                indegrees[decrementingVertex] -= 1;
-                if(indegrees[decrementingVertex] == 0){
-                    queue.add(decrementingVertex);
+                int vertexToDecrement = adjacencies.next();
+                indegrees[vertexToDecrement] -= 1;
+                if(indegrees[vertexToDecrement] == 0){
+                    queue.add(vertexToDecrement + 1);
                 }
             }
+        }
+        if(resultIndex >= results.length + 1 || resultIndex == 0){ // Catch symptom of cyclic graph
+            throw new IllegalArgumentException();
         }
         return results;
     }
