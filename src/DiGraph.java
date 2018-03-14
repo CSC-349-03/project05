@@ -19,17 +19,12 @@ public class DiGraph {
     }
 
     public void addEdge(int from, int to){
-        /*for(Integer entry : graphAdjacencies){ // Don't add if edge already connected
-            if(entry.equals(to)){
-                return;
-            }
-        }*/
-        if (!(graphAdjacencies[from-1]).contains(to-1))
+    	int length = graphAdjacencies.length;
+        if (!(graphAdjacencies[from-1].contains(to-1)) && (graphAdjacencies[from-1].size() < length) && (to <= length))
         {
             graphAdjacencies[from-1].add(to-1);
             System.out.println("(" + from + ", " + to + ") edge is now added to the graph");
         }
-        // TODO: Add edge if not found
     }
 
     public void deleteEdge(int from, int to){
@@ -109,5 +104,131 @@ public class DiGraph {
             throw new IllegalArgumentException();
         }
         return results;
+    }
+
+    private VertexInfo[] BFS(int s) // Input naturally indexed
+    {
+    	VertexInfo[] bfs = new VertexInfo[graphAdjacencies.length];
+    	int size = graphAdjacencies[s-1].size();
+    	int level = 0;
+    	bfs[s-1] = new VertexInfo(0, s); // Distance for self is 0
+    	while (size > 0)
+    	{
+    		size = nextLevelBFS(level, bfs);
+    		level++;
+    	}
+        return bfs;
+    }
+
+    // Searches the list for the inputs matching the level specified.  When it finds
+    // one, it goes through all of its edges and checks if there's already a recorded path to it.
+    // If not, it adds the VertexInfo. Returns the number of VertexInfos added
+    private int nextLevelBFS(int level, VertexInfo[] bfs) // Input s naturally indexed
+    {
+    	int size = 0;
+    	for (int i = 0; i < graphAdjacencies.length; i++)
+    	{
+    		if ((bfs[i] != null) && (bfs[i].distance == level)) // If it is the level we're looking for
+    		{
+    			Iterator<Integer> adjacencies = graphAdjacencies[i].iterator(); // NOT naturally indexed
+    			while(adjacencies.hasNext())
+        		{
+            		int neighbor = adjacencies.next();  // NOT naturally indexed
+            		if (bfs[neighbor] == null)
+            		{
+            			bfs[neighbor] = new VertexInfo(level+1, i+1);
+            			size++;
+            		}
+        		}
+    		}
+    	}
+    	return size;
+    }
+
+    // Return true if there is a path from "from" to "to"
+    public boolean isTherePath(int from, int to) // Inputs naturally indexed
+    {
+    	VertexInfo[] bfs = BFS(from);
+    	return (bfs[to-1] != null);
+    }
+
+    // Returns the shortest distance from "from" to "to", -1 if there is no path
+    public int lengthOfPath(int from, int to) // Inputs naturally indexed
+    {
+    	VertexInfo[] bfs = BFS(from);
+    	if (bfs[to-1] == null)
+    	{
+    		return -1;
+    	}
+    	else
+    	{
+    		return bfs[to-1].distance;
+    	}
+    }
+
+    // Prints the path from "from" to "to" if "to" can be reached
+    public void printPath(int from, int to) // Inputs naturally indexed
+    {
+    	VertexInfo[] bfs = BFS(from);
+    	if (bfs[to-1] == null)
+    	{
+    		System.out.println("There is no path");
+    	}
+    	else
+    	{
+    		int current = to-1;  // NOT naturally indexed
+    		LinkedList<Integer> queue = new LinkedList<Integer>(); // Contents NOT naturally numbered
+    		while (current != (from-1)) // Add used paths in order, won't add the first
+    		{
+    			queue.addFirst(current);
+    			current = bfs[current].parent - 1;
+    		}
+    		Iterator<Integer> adjacencies = queue.iterator();
+    		System.out.print("From " + from);  // Print the start
+            while(adjacencies.hasNext())
+            {
+                int next = adjacencies.next();
+                System.out.print(" to " + (next+1));
+            }
+            System.out.println();
+    	}
+    }
+
+    private TreeNode buildTree(int s) // Input is naturally indexed
+    {
+    	VertexInfo[] bfs = BFS(s);
+    	TreeNode root = new TreeNode(s); // Treenodes will be naturally indexed
+    }
+
+    public void printTree(int s) // Input is naturally indexed
+    {
+    	TreeNode root = buildTree(s);
+    }
+
+    private class VertexInfo
+    {
+    	int distance;
+    	int parent;
+    	private VertexInfo(int dist, int prev)
+    	{
+    		distance = dist;
+    		parent = prev;
+    	}
+    }
+
+    private class TreeNode
+    {
+    	int vertex;
+    	LinkedList<TreeNode> children;
+    	private VertexInfo(int vert)
+    	{
+    		vertex = vert;
+    		children = new LinkedList<TreeNode>();
+    	}
+    	private VertexInfo(int vert, LinkedList<TreeNode> kids)
+    	{
+    		vertex = vert;
+    		children = kids;
+    	}
     }
 }
