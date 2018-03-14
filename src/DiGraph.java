@@ -196,19 +196,44 @@ public class DiGraph {
 
     private TreeNode buildTree(int s) // Input is naturally indexed
     {
-    	VertexInfo[] bfs = BFS(s);
-    	TreeNode root = new TreeNode(s); // Treenodes will be naturally indexed
+    	VertexInfo[] bfs = BFS(s); // BFS method takes naturally indexed input, but array is indexed from zero
+        TreeNode[] nodeArray = new TreeNode[bfs.length]; // Used to quickly get parent when child needs to be added
+    	TreeNode root = nodeArray[s-1] = new TreeNode(s - 1); // Treenodes will be indexed from 0
+        for(int i = 0; i < bfs.length; i++){ // Everything in this loop is indexed from 0
+            if(i == s-1 || bfs[i] == null){ // Skip root and empty node numbers
+                continue;
+            }
+            TreeNode newNode = new TreeNode(i); // TODO: Make sure pass by reference works for this object
+            nodeArray[i] = newNode;
+            VertexInfo vertex = bfs[i]; // Get info about newly added vertex
+            nodeArray[vertex.parent - 1].children.add(newNode); // Find vertex's parent and add vertex to it
+        }
+        return root;
     }
 
     public void printTree(int s) // Input is naturally indexed
     {
     	TreeNode root = buildTree(s);
+        printTreeRecurse(root, 0);
+    }
+
+    private void printTreeRecurse(TreeNode subroot, int indentations){
+        if(subroot.isLeaf()){
+            for(int i = 1; i < indentations; i++){
+                System.out.print("    ");
+            }
+            System.out.println(subroot.vertex + 1);
+        }else{
+            for(TreeNode child : subroot.children){
+                printTreeRecurse(child, indentations + 1);
+            }
+        }
     }
 
     private class VertexInfo
     {
     	int distance;
-    	int parent;
+    	int parent; // Naturally indexed from 1
     	private VertexInfo(int dist, int prev)
     	{
     		distance = dist;
@@ -218,17 +243,21 @@ public class DiGraph {
 
     private class TreeNode
     {
-    	int vertex;
+    	int vertex; // Numbered from zero
     	LinkedList<TreeNode> children;
-    	private VertexInfo(int vert)
+    	private TreeNode(int vert)
     	{
     		vertex = vert;
     		children = new LinkedList<TreeNode>();
     	}
-    	private VertexInfo(int vert, LinkedList<TreeNode> kids)
+    	private TreeNode(int vert, LinkedList<TreeNode> kids)
     	{
     		vertex = vert;
     		children = kids;
     	}
+    	private boolean isLeaf()
+        {
+            return children.isEmpty();
+        }
     }
 }
