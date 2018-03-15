@@ -2,7 +2,7 @@
  **  dtwyman@calpoly.edu, aledawson@calpoly.edu
  **  CSC 349-03
  **  Project 5
- **  03-09-2018
+ **  03-14-2018
  */
 
 import java.io.*;
@@ -198,15 +198,16 @@ public class DiGraph {
     {
     	VertexInfo[] bfs = BFS(s); // BFS method takes naturally indexed input, but array is indexed from zero
         TreeNode[] nodeArray = new TreeNode[bfs.length]; // Used to quickly get parent when child needs to be added
-    	TreeNode root = nodeArray[s-1] = new TreeNode(s - 1); // Treenodes will be indexed from 0
+        for (int i = 0; i < bfs.length; i++) // Initialize node Array to have objects
+        {
+            nodeArray[i] = new TreeNode(i);
+        }
+        TreeNode root = nodeArray[s-1]; // Treenodes will be indexed from 0
         for(int i = 0; i < bfs.length; i++){ // Everything in this loop is indexed from 0
-            if(i == s-1 || bfs[i] == null){ // Skip root and empty node numbers
-                continue;
+            if(!((i == s-1) || (bfs[i] == null))){ // Skip root and empty node numbers
+                VertexInfo vertex = bfs[i]; // Get info about newly added vertex
+                nodeArray[vertex.parent - 1].children.add(nodeArray[i]); // Find vertex's parent and add vertex to it
             }
-            TreeNode newNode = new TreeNode(i); // TODO: Make sure pass by reference works for this object
-            nodeArray[i] = newNode;
-            VertexInfo vertex = bfs[i]; // Get info about newly added vertex
-            nodeArray[vertex.parent - 1].children.add(newNode); // Find vertex's parent and add vertex to it
         }
         return root;
     }
@@ -218,16 +219,13 @@ public class DiGraph {
     }
 
     private void printTreeRecurse(TreeNode subroot, int indentations){
-        if(subroot.isLeaf()){
-            for(int i = 1; i < indentations; i++){
-                System.out.print("    ");
-            }
-            System.out.println(subroot.vertex + 1);
-        }else{
-            for(TreeNode child : subroot.children){
+        for(int i = 0; i < indentations; i++){
+            System.out.print("    ");
+        }
+        System.out.println(subroot.vertex + 1);
+        for(TreeNode child : subroot.children){
                 printTreeRecurse(child, indentations + 1);
             }
-        }
     }
 
     private class VertexInfo

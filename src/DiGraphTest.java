@@ -2,7 +2,7 @@
  **  dtwyman@calpoly.edu, aledawson@calpoly.edu
  **  CSC 349-03
  **  Project 5
- **  03-09-2018
+ **  03-14-2018
  */
 
 import java.util.*;
@@ -111,9 +111,10 @@ public class DiGraphTest
                   graph.printPath(i, j);
                   flush = scanner.nextLine();
                   break;
-               case "b":  // Print shortest path
+               case "b":  // Print breadth first tree
                   System.out.println("Enter the starting index of the breadth first tree");
                   i = scanner.nextInt();
+                  System.out.println("Breadth First Tree:");
                   graph.printTree(i);
                   flush = scanner.nextLine();
                   break;
